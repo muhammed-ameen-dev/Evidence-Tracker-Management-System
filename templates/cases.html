@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block title %}Cases | SDEMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0 fw-semibold"><i class="bi bi-folder2-open me-2"></i>Cases</h2>
+    <div class="d-flex align-items-center gap-3 col-md-6 col-12 justify-content-end">
+        {% if user.is_authenticated %}
+            <a href="{% url 'create_case' %}" class="btn btn-primary rounded-pill px-4">
+                <i class="bi bi-plus-lg me-2"></i>Add Case
+            </a>
+        {% endif %}
+        <div class="input-group" style="max-width: 250px;">
+            <span class="input-group-text bg-transparent text-light border-secondary"><i class="bi bi-search"></i></span>
+            <input id="caseSearch" type="text" class="form-control" placeholder="Search...">
+        </div>
+    </div>
+</div>
+
+<div class="card card-glass">
+    <div class="card-header border-0"><strong><i class="bi bi-table me-2"></i>Case List</strong></div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-dark-glass table-striped table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Case ID</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th class="text-center">Forensic Items</th>
+                        <th>Created By</th>
+                        <th>Created At</th>
+                        <th class="text-center">Status</th>
+                        {% if is_admin %}
+                        <th class="text-center">Actions</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody id="casesTableBody">
+                    {% for case in cases %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'evidence' %}?case={{ case.case_id }}" class="text-decoration-none">
+                                    <span class="badge text-bg-primary hover-bright">{{ case.case_id }}</span>
+                                </a>
+                            </td>
+                            <td class="fw-medium">{{ case.title }}</td>
+                            <td class="muted-text">{{ case.description|truncatechars:60 }}</td>
+                            <td class="text-center">
+                                <span class="badge rounded-pill bg-dark-glass text-light border border-secondary px-3">
+                                    <i class="bi bi-file-earmark-medical me-1"></i>{{ case.evidence_count }}
+                                </span>
+                            </td>
+                            <td>{{ case.created_by.username }}</td>
+                            <td class="muted-text">{{ case.created_at|date:"M d, Y" }}</td>
+                            <td class="text-center">
+                                {% if case.status == 'ACTIVE' %}
+                                    <span class="badge bg-success rounded-pill px-2 shadow-sm"><i class="bi bi-unlock-fill me-1"></i>Active</span>
+                                {% else %}
+                                    <span class="badge bg-secondary rounded-pill px-2 shadow-sm"><i class="bi bi-lock-fill me-1"></i>Closed</span>
+                                {% endif %}
+                            </td>
+                            {% if is_admin %}
+                            <td class="text-center">
+                                <div class="btn-group">
+                                    <a href="{% url 'toggle_case_status' case.pk %}" 
+                                       class="btn btn-sm {% if case.status == 'ACTIVE' %}btn-outline-secondary{% else %}btn-outline-success{% endif %} rounded-pill px-2 me-2"
+                                       title="{% if case.status == 'ACTIVE' %}Lock Case{% else %}Unlock Case{% endif %}">
+                                        {% if case.status == 'ACTIVE' %}<i class="bi bi-lock-fill"></i> Lock{% else %}<i class="bi bi-unlock-fill"></i> Unlock{% endif %}
+                                    </a>
+                                    <button type="button" 
+                                            class="btn btn-outline-danger btn-sm rounded-pill px-2"
+                                            onclick="openDeleteModal('{% url 'delete_case' case.pk %}', '{{ case.case_id }}')">
+                                        <i class="bi bi-trash3-fill"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            {% endif %}
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center muted-text py-4">
+                                <i class="bi bi-folder-x fs-4 d-block mb-2"></i>No cases found.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<style>
+    .hover-bright:hover { filter: brightness(1.2); cursor: pointer; transition: filter 0.2s; }
+    .bg-dark-glass { background: rgba(0, 0, 0, 0.2); }
+</style>
+{% include 'modals/delete_modal.html' %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const caseSearchInput = document.getElementById('caseSearch');
+    const caseRows = document.querySelectorAll('#casesTableBody tr');
+    if (caseSearchInput) {
+        caseSearchInput.addEventListener('keyup', function () {
+            const query = this.value.toLowerCase();
+            caseRows.forEach((row) => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Case | SDEMS{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="d-flex align-items-center mb-4">
+            <a href="{% url 'cases' %}" class="btn btn-outline-light btn-sm rounded-pill me-3">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+            <h2 class="mb-0 fw-semibold"><i class="bi bi-plus-circle me-2"></i>Create New Case</h2>
+        </div>
+
+        <div class="card card-glass shadow-lg">
+            <div class="card-body p-4 p-md-5">
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-medium text-light mb-2">Case Title</label>
+                        <input type="text" name="title" required class="form-control" placeholder="Enter case title...">
+                        <div class="form-text muted-text small mt-1">Provide a concise and descriptive title for the case.</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-medium text-light mb-2">Description</label>
+                        <textarea name="description" rows="5" class="form-control" placeholder="Provide detailed case description..."></textarea>
+                    </div>
+
+                    <div class="info-alert mb-4 p-3 rounded-3" style="background: rgba(111, 140, 255, 0.1); border: 1px solid rgba(111, 140, 255, 0.2);">
+                        <div class="d-flex align-items-center text-light small">
+                            <i class="bi bi-info-circle-fill me-2 text-brand"></i>
+                            <span>The <strong>Case ID</strong> will be automatically generated upon submission (e.g., CASE-001).</span>
+                        </div>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary rounded-pill py-2 fw-semibold">
+                            <i class="bi bi-check2-circle me-2"></i>Create Case
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

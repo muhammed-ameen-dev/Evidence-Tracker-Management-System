@@ -1,0 +1,47 @@
+<!-- Reusable Premium Deletion Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content card-glass border-0 shadow-lg">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-brand" id="deleteModalLabel">
+                    <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>Critical Warning
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-4">
+                <p class="mb-1 fw-medium fs-5">Are you sure you want to delete this record?</p>
+                <div id="deleteItemName" class="badge bg-danger-subtle text-danger rounded-pill px-3 py-2 mb-3 font-monospace"></div>
+                <p class="muted-text small mb-0">
+                    <i class="bi bi-info-circle me-1"></i>This action is permanent and cannot be reversed. All associated audit trails and evidence mappings will be impacted.
+                </p>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-outline-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="post" action="">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger rounded-pill px-4 shadow-sm">
+                        <i class="bi bi-trash3-fill me-1"></i>Permamently Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openDeleteModal(url, itemName) {
+        const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        document.getElementById('deleteForm').action = url;
+        document.getElementById('deleteItemName').innerText = itemName;
+        modal.show();
+    }
+</script>
+
+<style>
+    .modal-content.card-glass {
+        background: rgba(25, 25, 35, 0.95);
+        backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+    .text-brand { color: var(--brand); }
+</style>
